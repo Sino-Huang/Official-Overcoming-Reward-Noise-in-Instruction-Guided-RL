@@ -1,0 +1,8 @@
+# This is a boilerplate parameters config generated for pipeline 'minigrid_diff_env_testing_dataloader'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+minigrid_diff_env_testing_dataloader_params:
+  is_dataloader_tested: true
+  num_workers: 0 # 0 will use the MainProcess to load data, which is memory efficient

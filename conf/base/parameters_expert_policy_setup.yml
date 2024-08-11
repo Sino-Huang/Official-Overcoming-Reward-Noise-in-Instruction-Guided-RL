@@ -1,0 +1,30 @@
+# This is a boilerplate parameters config generated for pipeline 'expert_policy_setup'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+
+expert_policy_params:
+  is_expert_policy_evaluated: true
+  eval_video_dir: "data/02_intermediate/eval_expert_policy_videos"
+
+  crafter_env_params:
+    model_cls: "PPOADModel"
+    saved_model_path: "data/01_raw/ppo_ad-debug-s00/agent-e250.pt"
+    resize: 64 # the size that the expert policy model expects
+    model_kwargs:
+      impala_kwargs:
+        chans: [64, 128, 128]
+        outsize: 256
+        nblock: 2
+        post_pool_groups: 1
+        init_norm_kwargs:
+          batch_norm: False
+          group_norm_groups: 1
+      dense_init_norm_kwargs:
+        layer_norm: True
+
+
+  minigrid_env_params:
+    model_cls: "BabyAIBot" 

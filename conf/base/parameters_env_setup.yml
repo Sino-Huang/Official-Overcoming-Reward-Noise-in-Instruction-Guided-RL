@@ -1,0 +1,37 @@
+# This is a boilerplate parameters config generated for pipeline 'env_setup'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+# Link: https://docs.kedro.org/en/stable/configuration/advanced_configuration.html#how-to-override-configuration-with-runtime-parameters-with-the-omegaconfigloader 
+
+env_setup_params:
+  # Crafter env configs are adapted from Achievement Distillation project 
+  crafter_env_params:
+    has_ext_reward: true # whether the environment has extrinsic reward signal
+
+  # Minigrid env configs are adapted from DEIR project
+  minigrid_env_params:
+    observation: "full" # full | partial, whether the agent have full access to the environment grid or only partial access, by default we use full access because this work we do not focus on exploration
+    auxiliary_info: ["grid"] # grid allows the agent possesses an inherent capability to map pixels to their corresponding objects, which allows for creating oracle reward machines. Reward machine construction and learning are not the focus of this work. 
+    level_name: "BabyAI-GoToSeqS5R2-v0" # level name of the environment
+    room_size: 5 # 5 | 5 | 6 , modes: small, normal, large; size of a room in the environment
+    num_rows: 3 # 2 | 3 | 3, number of rooms along the vertical axis
+    num_cols: 3 # 2 | 3 | 3, number of rooms along the horizontal axis
+    max_step_ratio: 4 # num_rows * num_cols * room_size * room_size * max_step_ratio = max_steps
+
+    lang_purpose_params:
+      is_task_composition: false # whether we want to have task composition in the environment
+    policy_purpose_params:
+      is_task_composition: true 
+
+    max_difficulty: 2 # if the task composition num is above this value, we will ask the env engine to resample. now we only support 2
+
+  
+  montezuma_env_params:
+    level_name: "MontezumaRevengeNoFrameskip-v4"
+    # the montezuma env will have separated training data collection script 
+    # thus montezuma env will only influence the 
+    # 1. setup_env, 2. train_validate_test_split_node, 3. setup_balance_dataloader. It will not affect a) expert_policy_setup and b) generate_traj_instr_pairs_node
+    walkthrough_csv_path: "data/03_traj_instr_pairs/montezuma/game_walkthrough.csv"
+

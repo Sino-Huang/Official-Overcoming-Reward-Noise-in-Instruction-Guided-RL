@@ -1,0 +1,8 @@
+## Some thoughts about why RND may not work when "Advantage Normalization" is used
+- *Exaggeration of Small Differences (Sensitivity)*: When you normalize the advantages, small differences between them can become exaggerated. This occurs because the normalization process involves subtracting the mean and dividing by the standard deviation. If the raw advantages are all close to each other (i.e., near zero), normalization will scale these small differences up, making them appear more significant than they actually are. It is known that rewards from RND model are noisy and can be very small, which can lead to this problem.
+- *Feedback Loop*: Advantage normalization can create a feedback loop in the training process. If the policy starts to converge towards a certain behavior, the advantages for actions consistent with this behavior will tend to cluster around a small range of values. Normalizing these clustered values can misrepresent their importance. More specifically, when a feedback loop occurs due to advantage normalization in PPO, it can result in the policy overemphasizing certain actions that are only slightly better than others.
+
+According to [DEIR github issue thread](https://github.com/swan-utokyo/deir/issues/3), the authors of DEIR suggested not to use advantage normalization when dealing with Montezuma's Revenge environment.
+
+## TODO
+- reward heatmap for minigrid and montezuma, we want it so that we can theoretically prove that hard signal is better than soft signal. 

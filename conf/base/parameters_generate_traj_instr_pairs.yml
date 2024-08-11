@@ -1,0 +1,16 @@
+# This is a boilerplate parameters config generated for pipeline 'generate_traj_instr_pairs'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+traj_instr_pairs_params:
+  is_generation_evaluated: true
+  traj_instr_gen_seed: 9423
+  num_pairs: 80000 # 80000 | 3200 for testing diff size envs for minigrid 
+  chunksize: 1600
+  crafter_env_params:
+    traj_memory_length: 20 # decided by prelim testing
+  minigrid_env_params:
+    traj_memory_length: 10 # decided by prelim testing
+    

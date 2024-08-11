@@ -1,0 +1,93 @@
+venv: # Virtual environments 
+  type: MemoryDataset
+  copy_mode: assign
+
+rollout_storage: # Rollout storage
+  type: MemoryDataset
+  copy_mode: assign
+
+expert_model: 
+  type: MemoryDataset
+  copy_mode: assign
+
+expert_model_eval_env: 
+  type: MemoryDataset
+  copy_mode: assign
+
+eval_env_init_obs: 
+  type: MemoryDataset
+  copy_mode: assign
+
+# https://docs.kedro.org/en/stable/configuration/advanced_configuration.html#how-to-use-global-variables-with-the-omegaconfigloader
+
+expert_traj_data#pkl:
+  type: partitions.PartitionedDataset
+  path: "data/03_traj_instr_pairs/${runtime_params:env, 'crafter'}"
+  dataset: pickle.PickleDataset
+  filename_suffix: ".pkl"
+
+expert_instr_data#csv:
+  type: pandas.CSVDataset
+  filepath: "data/03_traj_instr_pairs/${runtime_params:env, 'crafter'}/instr.csv"
+
+
+minigrid_smaller_env_expert_traj_data#pkl:
+  type: partitions.PartitionedDataset
+  path: "data/03_traj_instr_pairs/minigrid_smaller_size"
+  dataset: pickle.PickleDataset
+  filename_suffix: ".pkl"
+
+minigrid_smaller_env_expert_instr_data#csv:
+  type: pandas.CSVDataset
+  filepath: "data/03_traj_instr_pairs/minigrid_smaller_size/instr.csv"
+
+  
+minigrid_larger_env_expert_traj_data#pkl:
+  type: partitions.PartitionedDataset
+  path: "data/03_traj_instr_pairs/minigrid_larger_size"
+  dataset: pickle.PickleDataset
+  filename_suffix: ".pkl"
+
+minigrid_larger_env_expert_instr_data#csv:
+  type: pandas.CSVDataset
+  filepath: "data/03_traj_instr_pairs/minigrid_larger_size/instr.csv"
+
+train_dataloader:
+  type: MemoryDataset
+  copy_mode: assign
+
+validate_dataloader:
+  type: MemoryDataset
+  copy_mode: assign
+
+test_dataloader:
+  type: MemoryDataset
+  copy_mode: assign
+
+smaller_env_test_dataloader:
+  type: MemoryDataset
+  copy_mode: assign
+
+larger_env_test_dataloader:
+  type: MemoryDataset
+  copy_mode: assign
+
+# --- setup rl policy training models ---
+
+policy_model:
+  type: MemoryDataset
+  copy_mode: assign
+
+int_rew_model:
+  type: MemoryDataset
+  copy_mode: assign
+
+lang_rew_model:
+  type: MemoryDataset
+  copy_mode: assign
+
+lang_rew_model_load_path:
+  type: MemoryDataset
+  copy_mode: assign
+
+# --- end setup rl policy training models ---

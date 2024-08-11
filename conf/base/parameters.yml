@@ -1,0 +1,96 @@
+
+# General configs
+general:
+  env_name: "${runtime_params:env, 'crafter'}" # crafter | minigrid | montezuma 
+  env_purpose: "${runtime_params:purpose, 'policy'}" # lang | policy, lang is for language model training, policy is for policy training
+
+  debug_mode: "${runtime_params:debug, false}" # if true, we will not send to wandb 
+
+  nproc: 8 # Number of processes to use for parallel envs 
+  nstep: 512 # length of the rollout stored in the buffer 
+  seed: 2565 # random seed for the environment, we will use this seed to generate a group of seeds for each environment instance 2565 | 1234 | 7738
+  max_steps: 10000 # maximum number of steps in an episode, adapted from Achievement Distillation project
+  nepoch: 250 # number of epochs to train RL policy 250 x 512 x 8 ~= 1M steps
+  hidsize: 1024 # follow the convention from Achievement Distillation paper, control the semantic encoding size 
+  device: "cuda:0" # device to use for training
+
+  constant:
+    clip_mean: [0.48145466, 0.4578275, 0.40821073]
+    clip_std: [0.26862954, 0.26130258, 0.27577711]
+    clip_size: 224 # we will use 224x224 image size for the environment so that we can use the pre-trained CLIP model 
+    env_size: 64 # we will use 64x64 image size to fit achievement distillation model
+    clip_embeds_size: 512 # the output dimension size of the CLIP model
+
+
+# ! 6 eval lang rew model 
+# kedro run --from-nodes "train_validate_test_split_node,setup_minigrid_generalization_testing_dataloader_node" --to-nodes "eval_lang_rew_model_node" --params "env=minigrid,purpose=lang"
+
+
+# ! 5 train pure rl + exploration rewards 
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=minigrid,purpose=policy,rl_policy_setup_params.is_int_rew_activated=true,rl_policy_setup_params.is_lang_rew_activated=false"
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=crafter,purpose=policy,rl_policy_setup_params.is_int_rew_activated=true,rl_policy_setup_params.is_lang_rew_activated=false"
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=montezuma,purpose=policy,rl_policy_setup_params.is_int_rew_activated=true,rl_policy_setup_params.is_lang_rew_activated=false"
+
+# ! 4 train pure rl policy model 
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=minigrid,purpose=policy,rl_policy_setup_params.is_int_rew_activated=false,rl_policy_setup_params.is_lang_rew_activated=false"
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=crafter,purpose=policy,rl_policy_setup_params.is_int_rew_activated=false,rl_policy_setup_params.is_lang_rew_activated=false"
+
+# kedro run --from-nodes "setup_env_node" --to-nodes "train_rl_main_node" --params "env=montezuma,purpose=policy,rl_policy_setup_params.is_int_rew_activated=false,rl_policy_setup_params.is_lang_rew_activated=false"
+
+
+# ! 3 train language reward model
+# * CNN markovian 
+# kedro run --from-nodes train_validate_test_split_node --to-nodes train_lang_rew_model_node --params env=minigrid,purpose=lang,lang_rew_model_params.is_markovian=true,lang_rew_model_params.traj_length=2,lang_rew_model_params.has_extra_data_manipulation=false,lang_rew_model_params.model_kwargs.minigrid_no_pretrain=true,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5
+
+# * CNN xclip 
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.is_markovian=false,lang_rew_model_params.traj_length=8,lang_rew_model_params.has_extra_data_manipulation=true,lang_rew_model_params.model_kwargs.pretrained_model_cls=microsoft/xclip-base-patch16,lang_rew_model_params.model_kwargs.minigrid_no_pretrain=true,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+# * CNN standard 
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.model_kwargs.minigrid_no_pretrain=true,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+# * CNN standard 5 length
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.traj_length=5,lang_rew_model_params.model_kwargs.minigrid_no_pretrain=true,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+# * xclip
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.is_markovian=false,lang_rew_model_params.traj_length=8,lang_rew_model_params.has_extra_data_manipulation=true,lang_rew_model_params.model_kwargs.pretrained_model_cls=microsoft/xclip-base-patch16,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+# * markovian
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.is_markovian=true,lang_rew_model_params.traj_length=2,lang_rew_model_params.has_extra_data_manipulation=false,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+# * standard 
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+
+# * standard 5 length
+# kedro run --from-nodes "train_validate_test_split_node" --to-nodes "train_lang_rew_model_node" --params "env=minigrid,purpose=lang,lang_rew_model_params.traj_length=5,lang_rew_model_params.algorithm_kwargs.lr=5.0e-5"
+
+
+# ! 2 get dataloader
+# kedro run -p pair_spliter_n_balancer --params "env=montezuma"
+
+# kedro run -p minigrid_diff_env_testing_dataloader --params "env=minigrid"
+
+# kedro run -p pair_spliter_n_balancer --params "env=minigrid"
+# kedro run -p pair_spliter_n_balancer
+
+# SAME EFFECT kedro run --from-nodes "train_validate_test_split_node" --to-nodes "setup_balanced_dataloader_node"
+
+# ! 1 generate trajectory instruction pairs
+# kedro run --to-nodes "generate_traj_instr_pairs_node" --params "env=minigrid,purpose=lang"    
+# kedro run --to-nodes "generate_traj_instr_pairs_node" --params "env=crafter,purpose=lang"
+
+# kedro run -p expert_policy_setup --params "env=minigrid,purpose=lang"  
+# kedro run -p expert_policy_setup --params "env=crafter,purpose=lang"
+
+# ! 0 setup environment
+# kedro run -p env_setup --params "env=montezuma" 
+# kedro run -p env_setup --params "env=minigrid"   
+# kedro run -p env_setup
+
+
+# ^mean_episodic_return_..t|^success_rate\.0|^int_rew_dsc_loss|^vf_loss|^pi|score|^mean_int_rew_per_step|^pi|^best|mean_episodic_return_lang

@@ -1,0 +1,19 @@
+# This is a boilerplate parameters config generated for pipeline 'reward_machine_setup'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+reward_machine_params:
+  lang_reward_machine_type: 'standard' # `standard` | `pmrm`, which specifies the type of reward machine used for training the language reward model. The 'standard' type is a "standard" finite state automata and assumes the reward machine has precise knowledge of whether a subgoal is achieved, while 'pmrm' refers to the "Progressive Multiplicative Reward Machine" which does not make this assumption.
+  # also other types: 
+  #   `no_temporal_order(_sim)`: it will simulate a perfect language reward model that gives reward 1 if the subgoal state is reached. However, the reward model will not know the order of the subgoals. Thus the agent can get reward for subgoal t+1 before subgoal t is reached. For this type, we mask out the signal from the actual language reward model. 
+  #   `oracle`: it will simulate a perfect language reward model that gives reward 1 if the subgoal state is reached. and it also knows the order of the subgoals. For this type, we mask out the signal from the actual language reward model. (Note the crafter default env just provide oracle reward signal for subgoals.)
+  #   `false_negative(_sim)`: setup a simulated language reward model that randomly mask out 50% of the reward signal on the selected instruction throughout the whole training time. For example, the agent will no more receive the reward signal from aligning to “climb down the ladder” instruction throughout the whole training. 
+
+  oracle_error_rate: 0.5 # 0.1, 0.2, 0.3, 0.4, 0.5
+
+
+  # ! assert lang_rew_machine_type in ['standard', 'oracle', 'no_temporal_order_sim', 'false_negative_sim', 'false_positive_sim']
+
+  # ! crafter has no standard or oracle or no_temporal_order_sim differentiation 

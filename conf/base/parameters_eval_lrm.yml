@@ -1,0 +1,8 @@
+# This is a boilerplate parameters config generated for pipeline 'eval_lrm'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+eval_lrm_params:
+  is_offline_eval_completed: true # whether the offline evaluation is completed

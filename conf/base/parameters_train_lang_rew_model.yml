@@ -1,0 +1,57 @@
+# This is a boilerplate parameters config generated for pipeline 'train_lang_rew_model'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+lang_rew_model_params:
+  is_markovian: false # ! when is_markovian is set to true, the traj_length should be 2, 
+  traj_length: 10 # 2 | 6 | 10 | (8), when the language model is markovian, the trajectory length should be 2, 8 is for "microsoft/xclip-base-patch16" model 
+  # ! 10 is adequate for showing complete semantic meaning in both crafter and minigrid environments, tested with preliminary experiments
+  has_data_augmentation: true 
+  has_extra_data_manipulation: true # when is_markovian is true, this should be false, 
+  lang_rew_type: "cosine_similarity" # "cosine_similarity" | "trajectory_recognition" # ! indicating whether the language model will use cosine similarity based or recognition based signal for training the language reward model
+
+  cosine_sim_based_params:
+    has_hard_signal: true # calculate CP empirical quantile during training if set to true
+    alpha: [0.1, 0.2] # alpha range (0, 1), higher leads to higher precision, e.g., 0.1 means that 10% of the true positive pairs may be marked as negative, but the trade-off is that the precision will be higher
+
+  recognition_based_params:
+    cls_weight: [0.43, 0.37, 0.2] # deprecated
+    # weights for three classes achieved, intend to achieve, irrelevant, achieved is rare but important, irrelevant is a common cases, intend to achieve is before achieved, but not achieved yet
+
+  model_kwargs:
+  # https://medium.com/@vi.ai_/exploring-and-building-the-llama-3-architecture-a-deep-dive-into-components-coding-and-43d4097cfbbb
+    rnn_model_cls: "GRU"
+    rnn_kwargs:
+      input_size: ${general.constant.clip_embeds_size}
+      hidden_size: ${lang_rew_model_params.model_kwargs.dense_kwargs.insize}
+      num_layers: 2
+      dropout: 0.2
+      bidirectional: false
+      batch_first: true
+
+    # https://azizbelaweid.substack.com/p/what-is-swiglu-how-to-implement-it?utm_campaign=post
+    # https://github.com/ThinamXx/Meta-llama/blob/49148983c7d650d61cc11f1cbdc857368c1f5dd5/llama/llama2.py#L138
+    dense_kwargs:
+      dense_model_cls: "swiglu" # "swiglu" | "linear" | "conv"
+      insize: ${general.constant.clip_embeds_size} 
+      nhidlayer: 1
+      dense_init_norm_kwargs:
+        rms_norm: true # this will be between the rnn and the dense layer
+
+
+    pretrained_model_cls: "openai/clip-vit-base-patch16" # "openai/clip-vit-base-patch16" | "microsoft/xclip-base-patch16" 
+    # ! "microsoft/xclip-base-patch16" model will encode 8 frame images into a single embedding, thus we do not need to use rnn model for this model, using this model require the trajectory length to be 8, when set to xclip, the is_markovian should be set to false 
+    is_pretrained_module_freezed: true # we will not train the pretrained module in this project 
+    minigrid_no_pretrain: false # backup plan B; the minigrid env is too abstract and the clip model is not good at generalizing to this environment, thus we may not use the pretrained model for this environment
+
+  algorithm_kwargs:
+    nepoch: 40
+    optimizer_cls: "AdamW"
+    wd: 5.0e-2 # weight decay coefficient
+    lr: 9.0e-4 # initial learning rate, there are some choices: 4.0e-4, 9.0e-4
+    save_interval: 8 
+    continue_training: false # you need to at least rename a checkpoint file to "best.pth" in the output directory to continue training
+    
+

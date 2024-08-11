@@ -1,0 +1,2 @@
+[console_scripts]
+better-alignment-signal-for-rl = better_alignment_signal_for_rl.__main__:main

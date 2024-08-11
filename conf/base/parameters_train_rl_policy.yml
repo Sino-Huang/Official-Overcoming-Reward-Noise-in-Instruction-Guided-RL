@@ -1,0 +1,66 @@
+# This is a boilerplate parameters config generated for pipeline 'train_rl_policy'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+train_rl_policy_params:
+  save_freq: 120
+  gamma: 0.95
+  gae_lambda: 0.65
+  continue_training: false # you need to at least rename a checkpoint file to "best.pth" in the output directory to continue training
+  eval_type_tag:
+
+  crafter_env_params: # int rew activated GPU ram ~= 19000MiB
+    algorithm_cls: "PPOAlgorithm" # set to PPOADAlgorithm when it is oracle reward, otherwise set to PPOAlgorithm
+    algorithm_kwargs:
+      ppo_nepoch: 3 # E_\pi epoch per rollout/ episode, repeat gradient descent 3 times with the same data but shuffled
+      ppo_nbatch: 8 # minibatch, thus the data_loader will yield 8 batches, and do gradient descent 8 times
+      clip_param: 0.2
+      vf_loss_coef: 0.5
+      ent_coef: 0.01 # entropy coefficient
+      lr: 3.0e-4
+      max_grad_norm: 0.5
+      aux_freq: 8     # N_\pi indicate how frequent we will optimize aux loss 
+      aux_nepoch: 6 # E_{aux} number epoch for optimize aux loss -> repeat gradient descent 6 times
+      pi_dist_coef: 1.0
+      vf_dist_coef: 1.0
+  
+  montezuma_env_params: # int rew activated GPU ram ~= 8000MiB
+    # The RND model exhibits instability, meaning that small changes to its architecture and hyperparameters can significantly impact performance. Key factors contributing to the original RND's success include:
+      # 1. Using an RNN-like 3-channel convolutional network that processes the previous two frames and the current frame as input.
+      # 2. Utilizing a running mean and standard deviation (obs_rms) to normalize input observations for computing the RND loss.
+      # 3. Not normalizing the advantage during the GAE calculation.
+    gamma: 0.99
+    gae_lambda: 0.95
+    int_rew_type: "rnd" # "rnd" | "deir"
+    pre_obs_norm_steps: 50
+    algorithm_cls: "MontezumaPPOAlgorithm"
+    algorithm_kwargs:
+      update_proportion: 0.25
+      ppo_nepoch: 3
+      ppo_batch_size: 256
+      clip_param: 0.1 # eps in RND, larger will encourage more exploration
+      vf_loss_coef: 0.5
+      ent_coef: 0.001 # entropy coefficient, larger will encourage more exploration
+      lr: 1.0e-4
+
+  minigrid_env_params: # int rew activated GPU ram ~= 19000MiB
+    algorithm_cls: "PPOAlgorithm" # PPOAlgorithm | PPOEWCAlgorithm we also tried PPOEWCAlgorithm but did not see improvement over PPOAlgorithm
+    # ref: https://github.com/ContinualAI/colab/blob/master/notebooks/intro_to_continual_learning.ipynb
+    algorithm_kwargs:
+      ppo_nepoch: 3
+      ppo_nbatch: 8
+      clip_param: 0.2
+      vf_loss_coef: 0.5
+      ent_coef: 0.01
+      lr: 3.0e-4
+      max_grad_norm: 0.5 # maximum gradient descent value set to 0.5 to prevent exploding gradients
+      ewc_lambda: 0.4 # EWC lambda value for the EWC loss
+
+
+  # note
+  # masks = 0 means done
+  # next_goal_obs is actually the goal obs (the obs when we receive the reward)
+
+  

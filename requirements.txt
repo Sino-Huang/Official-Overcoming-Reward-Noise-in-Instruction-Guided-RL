@@ -1,0 +1,59 @@
+# make sure you did this before continuing pip install --upgrade "setuptools==65.7.0" "wheel==0.38.4"
+ipython>=8.10
+jupyterlab>=3.0
+kedro~=0.19.3
+kedro-datasets>=1.0
+kedro-telemetry>=0.3.1
+kedro-viz>=6.7.0
+ruff~=0.1.8
+optuna~=3.6.1
+tqdm~=4.66.2
+
+# notebook support 
+ipylab>=1.0.0
+notebook>=7.0.0
+
+
+# Achievement Distillation dependencies
+numpy==1.23.5
+torch==2.0.1
+POT==0.9.1
+stable-baselines3==1.8.0
+crafter==1.8.1
+pygame~=2.5.2
+ruamel.yaml==0.17.40
+PyYAML==6.0.1
+wandb==0.15.11
+imageio[ffmpeg]~=2.34.0
+scikit-image~=0.24.0
+
+# Atari dependencies
+gymnasium[atari]~=0.29.1
+gymnasium[accept-rom-license]~=0.29.1
+ale-py~=0.8.0 
+scipy==1.13.0
+# Minigrid dependencies
+minigrid~=2.3.1
+
+# Huggingface dependencies
+transformers~=4.39.3
+datasets~=2.18.0
+torchvision~=0.15.2
+accelerate~=0.30.1
+
+# utils 
+icecream
+python-dotenv
+pandarallel
+av
+natsort
+scikit-learn~=1.5.0
+seaborn~=0.13.2
+
+# DL utils 
+einops~=0.7.0
+focal_loss_torch~=0.1.2
+rotary_embedding_torch~=0.6.1
+
+
+# in cases where gym env cannot be installed, try downgrade the pip by `pip install setuptools==65.5.0 pip==21`

@@ -1,0 +1,69 @@
+# This is a boilerplate parameters config generated for pipeline 'rl_policy_setup'
+# using Kedro 0.19.3.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.3/configuration/parameters.html
+
+rl_policy_setup_params:
+
+  is_int_rew_activated: false # ! indicating whether the intrinsic reward is activated
+  is_lang_rew_activated: false # ! indicating whether the language reward is activated
+
+  crafter_env_params:
+    model_cls: "PPOADModel"
+    model_kwargs:
+      hidsize: 1024
+      impala_kwargs:
+        chans: [64, 128, 128]
+        outsize: 256
+        nblock: 2
+        post_pool_groups: 1
+        init_norm_kwargs:
+          batch_norm: false
+          group_norm_groups: 1
+      dense_init_norm_kwargs:
+        layer_norm: true
+
+  minigrid_env_params:
+    model_cls: "PPOModel"
+    model_kwargs:
+      hidsize: 1024
+      impala_kwargs:
+        chans: [64, 128, 128]
+        outsize: 256
+        nblock: 2
+        post_pool_groups: 1
+        init_norm_kwargs: # for conv layers
+          batch_norm: false
+          group_norm_groups: 1
+      dense_init_norm_kwargs: # for dense layers (mlp)
+        layer_norm: true
+
+  montezuma_env_params:
+    model_cls: "PPORNNModel"
+    model_kwargs:
+      hidsize: 1024
+      gru_layers: 1
+      impala_kwargs:
+        chans: [64, 128, 128]
+        outsize: 256
+        nblock: 2
+        post_pool_groups: 1
+        init_norm_kwargs: # for conv layers
+          batch_norm: false
+          group_norm_groups: 1
+      dense_init_norm_kwargs: # for dense layers (mlp)
+        layer_norm: true
+
+  lang_rew_settings:
+    has_hard_signal: false # indicating whether the language reward model will use hard signal
+    hard_signal_cp_error_rate: "0.1" # "0.1" | "0.2" 
+    lang_rew_coef: 1.0 # indicating the coefficient of the language reward when feed to the policy network
+    # ! note that int_rew_coef from deir project is 1.0e-2 
+    has_boltzmann_rationality_coeff: false # indicating whether the RL policy learning will reset the value head of the policy network after the language reward model deactivate some of the reward signals
+    boltzmann_rationality_offset: 0.2
+    lang_reward_function_type: "normal" # normal | cmi_log | cmi_linear, cmi refers to conditional mutual information
+    has_reward_capping: true # indicating whether the RL policy learning will use reward capping to avoid wireheading / reward exploitation
+    capping_max: 2.0 # indicating the maximum reward value for the reward capping, a perfect alignment for lang rew is 1.0 
+
+
