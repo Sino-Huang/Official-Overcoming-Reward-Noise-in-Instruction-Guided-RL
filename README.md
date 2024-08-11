@@ -1,7 +1,7 @@
 # Overcoming Reward Noise in Instruction-Guided RL Project
+![BiMI Overview](./bimi_perform_overview.png)
 
-<img src="./bimi_overview.png" alt="BiMI Reward Function" style="width: 48%; display: inline-block;">
-<img src="./montezuma_difficult_task_success_rate.png" alt="BiMI Performance Compared to Baselines" style="width: 48%; display: inline-block;">
+
 
 
 This repository contains the codebase for the paper **Overcoming Reward Model Noise in Instruction-Guided Reinforcement Learning #886**
