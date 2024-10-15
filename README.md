@@ -4,7 +4,7 @@
 
 
 
-This repository contains the codebase for the paper **Overcoming Reward Model Noise in Instruction-Guided Reinforcement Learning #886**
+This repository contains the codebase for the paper **The Dark Side of VLM Rewards: Understanding and Mitigating False Positive Noise**
 
 > ***TL;DR:*** We show that false positive rewards in semantic similarity-based reward model is the primary reason for slowing down instruction-guided RL. So, we propose BiMI (Binary Mutual Information), a noise-robust reward function to address the issue. 
 
